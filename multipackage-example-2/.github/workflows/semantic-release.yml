@@ -1,0 +1,70 @@
+name: Semantic release
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    determine-release-packages:
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Checkout code
+                uses: actions/checkout@v4
+
+            -   name: Determine packages info
+                id: determine-release-packages
+                uses: actions/github-script@v7
+                with:
+                    script: |
+                        // read from the last commit message
+                        let packages = [];
+                        const message = context.payload.head_commit.message;
+                        console.log(`Commit message: ${message}`);
+                        const regex = /^release packages\s*:\s*([\w, ]+)/i;
+                        const match = message.match(regex);
+                        if (!match) {
+                            console.log('This is not a release commit. No packages to release');
+                            return JSON.stringify([]);
+                        }
+                        packages = match[1].split(',').map(p => p.trim());
+                        if(packages.length === 0) {
+                            console.log('No packages to release');
+                            return JSON.stringify([]);
+                        }
+                        console.log(`Packages to release: ${packages}`);
+                        return JSON.stringify(packages);
+    release:
+        permissions:
+            contents: write # to be able to publish a GitHub release
+            issues: write # to be able to comment on released issues
+            pull-requests: write # to be able to comment on released pull requests
+        needs: determine-release-packages
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Checkout code
+                uses: actions/checkout@v4
+            
+            -   name: Setup Node.js
+                uses: actions/setup-node@v4
+                with:
+                    node-version: 18
+                    cache: 'npm'
+
+            -   name: Install dependencies
+                run: npm install
+                working-directory: ui
+
+            -   name: Semantic release
+                run: |
+                    echo "Packages to release: ${{ needs.determine-release-packages.outputs.result }}"
+                    packages=$(echo "${{needs.determine-release-packages.outputs.result }}" | jq -rc '.[]')
+                    echo "Releasing packages: $packages"
+                    for package in $packages; do
+                        echo "Releasing package: $package"
+                        npm run release:$package
+                    done
+                working-directory: ui
+                shell: bash
+                env:
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

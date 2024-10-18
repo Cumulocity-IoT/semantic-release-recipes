@@ -1,0 +1,23 @@
+{
+  "name": "ui",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "release:analytics": "npm run release -w analytics",
+    "release:administration": "npm run release -w administration"
+  },
+  "author": "",
+  "license": "ISC",
+  "private":"true",
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/github": "^9.2.6",
+    "semantic-release": "22.0.12",
+    "semantic-release-monorepo": "https://github.com/SoftwareAG/semantic-release-monorepo/releases/download/v1.0.3/semantic-release-monorepo-1.0.3.tgz",
+    "semantic-release-monorepo-git": "https://github.com/SoftwareAG/semantic-release-monorepo-git/releases/download/v1.0.0/semantic-release-monorepo-git-1.0.0.tgz"
+  }
+}

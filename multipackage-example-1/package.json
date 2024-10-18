@@ -1,0 +1,22 @@
+{
+  "name": "multipackage-example-1",
+  "version": "1.0.0",
+  "description": "Example application",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "private": "true",
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/exec": "6.0.3",
+    "@semantic-release/git": "10.0.1",
+    "@semantic-release/github": "^9.2.6",
+    "fast-glob": "^3.3.2",
+    "semantic-release": "22.0.12"
+  }
+}
